@@ -11,7 +11,40 @@
     cursor: pointer;
 }
 
+.puntero {
+    cursor: pointer;
+}
+
 .preview-img{
     width: 200px;
     height: 200px;
+}
+
+.w100{
+    width: 100px;
+}
+
+.w140{
+    width: 140px;
+}
+
+.table-img{
+    border: 1px rgb(226, 226, 230) solid;
+    border-radius: 100%;
+    width: 35px;
+    height: 35px;
+}
+
+.fondo-modal-imagen{
+    background-color: rgba(0, 0, 0, 0.4);
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 0px;
+    width: 100%;
+    z-index: 999999;
+}
+
+.oculto{
+    display: none;
 }

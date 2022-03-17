@@ -1,0 +1,52 @@
+<div class="fondo-modal-image "
+     [class.oculto]="modalImgServ.mostrarModal">
+
+    <div class="modal fade show" 
+    id="staticBackdropLive" 
+    data-bs-backdrop="static" 
+    data-bs-keyboard="false" 
+    tabindex="-1" 
+    aria-labelledby="staticBackdropLiveLabel" 
+    style="display: block;" 
+    aria-modal="true" 
+    role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLiveLabel">Imagen Usuario</h5>
+                    <button 
+                            type="button" 
+                            class="btn-close" 
+                            data-bs-dismiss="modal" 
+                            aria-label="Close"
+                            (click)="cerrarModal()">x</button>
+                </div>
+                <div class="modal-body">
+                    <p>Seleccione una imagen...</p>
+                    <div class="text-center">
+
+                        <img *ngIf="!imagenPreview" [src]="modalImgServ.img" class="preview-img">
+                        <img *ngIf="imagenPreview" [src]="imagenPreview" class="preview-img">
+                    </div>
+    
+                    <input type="file"
+                            #inputFile
+                           (change)="cambiarImg( $event )">
+                </div>
+                <div class="modal-footer">
+                    <button 
+                            type="button" 
+                            class="btn btn-secondary" 
+                            data-bs-dismiss="modal"
+                            (click)="cerrarModal()">Cancelar</button>
+                    
+                    <button 
+                            type="button" 
+                            class="btn btn-primary"
+                            (click)="subirImg()"
+                            [disabled]="!imagenSubir">Actualizar Foto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
