@@ -6,27 +6,27 @@ const base_url = environment.base_url;
 @Injectable({
   providedIn: 'root'
 })
-export class FileUploadService { 
+export class FileUploadService {
 
   constructor() { }
 
   async actualizarImagen( archivo: File, tipo: 'usuarios'|'medicos'|'hospitales', id:string ){
-    
+
     try {
-      
+
       const url = `${ base_url }/uploads/${ tipo }/${ id }`;
       const formData = new FormData(); // FormData es propio de JS no se tiene que importar nada
       formData.append('imagen', archivo);
 
-      const resp = await fetch( 
-          url, 
+      const resp = await fetch(
+          url,
           {   // fetch es propio de JS y sirve para hacer peticiones Http
             method: 'PUT',
             headers: {
               'x-token': localStorage.getItem('token') || ''
             },
             body: formData
-      }) 
+      })
 
       const data = await resp.json();
 
@@ -35,16 +35,17 @@ export class FileUploadService {
         return data.nombreArchivo;
 
       } else {
+
         console.log( data.msg );
-        
+
         return false;
       }
-      
+
     } catch (error) {
 
       console.log(error);
       return false;
-      
+
     }
   }
 }

@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
+import { delay } from 'rxjs/operators';
+
 
 import { Usuario } from 'src/app/models/usuario.model';
-
 import { BusquedasService } from 'src/app/services/busquedas.service';
 import { UsuarioService } from 'src/app/services/usuario.service';
 import { ModalImagenService } from 'src/app/services/modal-imagen.service';
-import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-usuarios',
@@ -20,6 +21,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   public usuariosTemp: Usuario[];
   public desde: number = 0;
   public cargando: boolean = true;
+  public imgSubs: Subscription;
 
   constructor( private usuarioServ: UsuarioService,
                private busquedaServ: BusquedasService,
@@ -27,30 +29,31 @@ export class UsuariosComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
 
-    this.modalImgServ.nuevaImagen.unsubscribe();
+    // this.modalImgServ.nuevaImagen.unsubscribe();
+    this.imgSubs.unsubscribe();
   }
 
   ngOnInit(): void {
     this.cargarUsuarios();
-    
-    this.modalImgServ.nuevaImagen
-      .pipe( delay(100) ) // se agrega un delay para darle tiempo al server de guardar la imagen.
-      .subscribe(
-        img =>{
-          this.cargarUsuarios();
-        });
+
+    this.imgSubs = this.modalImgServ.nuevaImagen
+                  .pipe( delay(100) ) // se agrega un delay para darle tiempo al server de guardar la imagen.
+                  .subscribe(
+                    img =>{
+                      this.cargarUsuarios();
+                    });
   }
-  
+
   cargarUsuarios(){
-    
+
     this.usuarioServ.cargarUsuarios( this.desde )
       .subscribe( ({ total, usuarios }) => {
-        
+
         this.total = total;
         this.usuarios = usuarios;
         this.usuariosTemp = usuarios;
         this.cargando = false;
-        
+
       })
   }
 
@@ -74,9 +77,9 @@ export class UsuariosComponent implements OnInit, OnDestroy {
 
       this.busquedaServ.buscar('usuarios', termino)
       .subscribe( (usuarios:any)  => {
-        
+
         return this.usuarios = usuarios;
-        
+
       });
   }
 
@@ -97,10 +100,10 @@ export class UsuariosComponent implements OnInit, OnDestroy {
       confirmButtonText: 'Si, Borrar!'
     }).then((result) => {
       if (result.isConfirmed) {
-        
+
         this.usuarioServ.eliminarUsuario( usuario )
             .subscribe( resp => {
-              
+
               this.cargarUsuarios();
               Swal.fire('Usuario eliminado!',`El usuario ${ usuario.nombre } ha sido eliminado`,'success');
 
@@ -110,15 +113,15 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   }
 
   cambiarRole( usuario: Usuario){
-    
+
     this.usuarioServ.actualizarRole( usuario )
         .subscribe( resp => console.log(resp)
         );
-    
+
   }
 
   abriModal( usuario: Usuario){
-    
+
     this.modalImgServ.abrirModal( 'usuarios', usuario.uid, usuario.img);
   }
 }
