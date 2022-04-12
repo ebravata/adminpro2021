@@ -89,4 +89,13 @@ export class BusquedasService {
                 );
 
   }
+
+  busquedaGlobal( termino: string){
+
+    const url = `${ base_url }/busquedas/${ termino }`;
+
+    return this.http.get( url, this.headers);
+
+
+  }
 }

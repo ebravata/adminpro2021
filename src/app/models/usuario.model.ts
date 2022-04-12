@@ -10,7 +10,7 @@ export class Usuario {
         public password?: string,
         public img?: string,
         public google?: string,
-        public role?: string,
+        public role?: 'ADMIN_ROLE' | 'USER_ROLE',
         public uid?: string
     ){}
 
@@ -22,7 +22,7 @@ export class Usuario {
             return this.img;
         else if ( this.img )
             return `${ base_url }/uploads/usuarios/${ this.img }`;
-        else 
+        else
             return `${ base_url }/uploads/usuarios/no-img`;
     }
 }

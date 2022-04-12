@@ -24,13 +24,13 @@ export class UsuarioService {
   constructor( private http: HttpClient,
                private router: Router,
                private ngZone: NgZone) {
-              
+
         this.googleInit();
   }
 
   get token(): string {
     return localStorage.getItem('token') || '';
-  } 
+  }
 
   get uid(): string{
     return this.usuario.uid;
@@ -44,6 +44,15 @@ export class UsuarioService {
     }
   }
 
+  get userRole(): 'ADMIN_ROLE' | 'USER_ROLE' {
+    return this.usuario.role;
+  }
+
+  guardarLocalStorage( token: string, menu: string){
+      localStorage.setItem('token', token);
+      localStorage.setItem('menu', JSON.stringify( menu ));
+  }
+
   googleInit() {
 
     return new Promise<void> ( (resolve)  => {
@@ -53,17 +62,18 @@ export class UsuarioService {
           client_id: '1013639123505-vfdd8o8jnipj4in71ro4qg7463rt3ssj.apps.googleusercontent.com',
           cookiepolicy: 'single_host_origin',
         });
-        
+
         resolve();
       });
     });
-    
+
   }
 
   logout(){
 
     localStorage.removeItem('token');
-    
+    localStorage.removeItem('menu');
+
     this.auth2.signOut().then( () => {
 
       this.ngZone.run( () => {
@@ -73,32 +83,37 @@ export class UsuarioService {
   }
 
   validarToken(): Observable<boolean>{
-    
+
     return this.http.get(`${ base_url }/login/renew`, this.headers)
-    .pipe( 
-      map( (resp: any) => { 
-        
+    .pipe(
+      map( (resp: any) => {
+
         const{ nombre, email, google, img = '', role, uid } = resp.usuario;
-        
+
+        // se guarda el usuario en este servicio como una propiedad publica para cargar los datos durante toda la sesion
         this.usuario = new Usuario(nombre, email, '', img, google, role, uid );
 
-        localStorage.setItem('token', resp.token);
+        this.guardarLocalStorage( resp.token, resp.menu);
+        // localStorage.setItem('token', resp.jwtoken);
+
+
         return true;
       }),
       catchError( error => of( false ))
     );
   }
-  
+
   crearUsuario( formData: RegisterForm ){
-    
+
     // console.log('usuario creado');
 
     return this.http.post(`${ base_url }/usuarios`, formData)
-                  .pipe( 
+                  .pipe(
                     tap ( (resp: any) => {
 
-                    localStorage.setItem('token', resp.jwtoken);
-                    
+                    // localStorage.setItem('token', resp.jwtoken);
+                    this.guardarLocalStorage( resp.token, resp.menu);
+
                   }));
   }
 
@@ -109,33 +124,35 @@ export class UsuarioService {
       ...data,
       role: this.usuario.role
     };
-    
+
     return this.http.put(`${ base_url }/usuarios/${ this.uid }`, data, this.headers);
   }
-  
-  
+
+
   login( formData: LoginForm ){
-    
+
     // console.log('usuario creado');
 
     return this.http.post(`${ base_url }/login`, formData)
-              .pipe( 
+              .pipe(
                 tap ( (resp: any) => {
 
-                localStorage.setItem('token', resp.jwtoken);
+                // localStorage.setItem('token', resp.jwtoken);
+                this.guardarLocalStorage( resp.token, resp.menu);
 
               }));
   }
 
   loginGoogle( token: string ){
-    
+
     // console.log('usuario creado');
 
     return this.http.post(`${ base_url }/login/google`, { token })
-              .pipe( 
+              .pipe(
                 tap ( (resp: any) => {
 
-                localStorage.setItem('token', resp.jwtoken);
+                // localStorage.setItem('token', resp.jwtoken);
+                this.guardarLocalStorage( resp.token, resp.menu);
 
               }));
   }
@@ -144,13 +161,13 @@ export class UsuarioService {
     // localhost:3000/api/usuarios?desde=10
 
     const url = `${ base_url }/usuarios?desde=${ desde }`;
-    
+
     return this.http.get< DataUsuarios >( url, this.headers ) // el resultado que retorna es de tipo DataUsuarios (interface)
         .pipe(
           map( resp => {
 
             const usuarios= resp.usuarios.map(
-              user => new Usuario( 
+              user => new Usuario(
                 user.nombre, user.email, '', user.img, user.google, user.role, user.uid)
             );
 
@@ -166,16 +183,16 @@ export class UsuarioService {
     console.log('eliminar usuario');
 
     const url = `${ base_url }/usuarios/${ usuario.uid }`;
-    
+
     return this.http.delete( url, this.headers );
-    
+
   }
 
-  actualizarRole( usuario: Usuario ) 
+  actualizarRole( usuario: Usuario )
   {
 
       return this.http.put(`${ base_url }/usuarios/${ usuario.uid }`, usuario, this.headers);
   }
 
-  
+
 }

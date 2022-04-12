@@ -11,10 +11,10 @@
                     <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false"><img  [src]="usuario.imagenUrl" alt="user" /><span class="hide-menu">{{ usuario.nombre }}</span></a>
                     <ul aria-expanded="false" class="collapse">
                         <li>
-                            <a 
+                            <a
                                 routerLinkActive="active"
                                 routerLink="./perfil">
-                                My Profile 
+                                My Profile
                             </a>
                         </li>
 
@@ -30,10 +30,10 @@
                 </li>
                 <li class="nav-devider"></li>
                 <li class="nav-small-cap">PERSONAL</li>
-                <li *ngFor="let menuItem of menuItems"> 
+                <li *ngFor="let menuItem of sidebarServ.menu">
                     <a class="has-arrow waves-effect waves-dark" href="#" aria-expanded="false">
                         <i class="{{ menuItem.icono}}"></i>
-                        <span class="hide-menu">{{ menuItem.titulo}} 
+                        <span class="hide-menu">{{ menuItem.titulo}}
                             <span class="label label-rouded label-themecolor pull-right">4</span>
                         </span>
                     </a>
@@ -42,12 +42,12 @@
                             <a [routerLink]="submenuItem.url"
                                 routerLinkActive="active"
                                 [routerLinkActiveOptions]="{exact: true}"
-                            
+
                             >{{ submenuItem.titulo}} </a>
                         </li>
                     </ul>
                 </li>
-                
+
             </ul>
         </nav>
         <!-- End Sidebar navigation -->
